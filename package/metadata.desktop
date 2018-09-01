@@ -1,0 +1,20 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Ticker
+Comment=Notification ticker
+Type=Service
+Icon=preferences-desktop-notification
+
+# X-KDE-Library=plasma_applet_ticker
+# X-KDE-ParentApp=
+X-KDE-PluginInfo-Author=Heena
+X-KDE-PluginInfo-Email=heena393@gmail.com
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-Name=org.kde.plasma.ticker
+X-KDE-PluginInfo-Version=1
+X-KDE-PluginInfo-Website=plasma.kde.org
+X-KDE-PluginInfo-Category=Windows and Tasks
+X-KDE-ServiceTypes=Plasma/Applet
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+X-Plasma-NotificationArea=true
