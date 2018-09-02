@@ -10,19 +10,6 @@ Item {
   // private:
   property Item __currentTickerItem
 
-  function sanitizeIllFormatedHtml(body) {
-    if (!body) return null;
-
-    // model.body may be ill-formated HTML-like string
-    // ex: "<?xml version="1.0"?><html>Ping!</html><?xml version="1.0"?><html>Pong!</html>"
-    // split last one part of HTML document
-    var m = model.body.match(/<html>.*<\/html>/g);
-    if (!m) return null;
-    // FIXME remove all HTML tags
-    var text = m[m.length - 1].replace(/<html>(.*)<\/html>/, '$1');
-    return text.replace(/<br\/>/g, '⏎');
-  }
-
   onModelChanged: {
     // TODO default icon and text
     // TODO configureable default text
@@ -31,7 +18,7 @@ Item {
     var props = {
       // FIXME icon? image? appIcon?
       icon: model.appIcon,
-      body: sanitizeIllFormatedHtml(model.body),
+      body: model.onelineBody,
     };
     var o = tickerItemComponent.createObject(ticker, props);
     o.state = 'SHOWN';

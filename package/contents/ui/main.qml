@@ -9,13 +9,15 @@ Item {
   property var model
   property bool isDesktopContainment: plasmoid.location == PlasmaCore.Types.Floating
 
+  Plasmoid.icon: (model && model.appIcon) ? model.appIcon : 'preferences-desktop-notification'
+  Plasmoid.toolTipMainText: (model && model.summary) ? model.summary : 'Ticker'
+  Plasmoid.toolTipSubText: (model && model.body) ? model.body : null
   Plasmoid.preferredRepresentation: isDesktopContainment ? Plasmoid.fullRepresentation : Plasmoid.compactRepresentation
   Plasmoid.compactRepresentation: Ticker {
     model: main.model
   }
   // TODO notifications history list
   Plasmoid.fullRepresentation: Item {}
-  // TODO tooltip
 
   PlasmaCore.DataSource {
     id: notificationsSource
@@ -39,7 +41,23 @@ Item {
         console.log('%1: %2'.arg(k).arg(data[k]))
       }
 
-      model = data;
+      var _data = Object.create(data); // shallow copy
+      _data.originalBody = data.body;
+      _data.body = sanitizeIllFormatedHtml(data.body);
+      _data.onelineBody = _data.body.replace(/<br\/>/g, '⏎');
+      model = _data;
     }
+  }
+
+  function sanitizeIllFormatedHtml(s) {
+    if (!s) return null;
+
+    // model.body may be ill-formated HTML-like string
+    // ex: "<?xml version="1.0"?><html>Ping!</html><?xml version="1.0"?><html>Pong!</html>"
+    // split last one part of HTML document
+    var m = s.match(/<html>.*<\/html>/g);
+    if (!m) return null;
+    // FIXME remove all HTML tags and replace &gt; with >
+    return m[m.length - 1].replace(/<html>(.*)<\/html>/, '$1');
   }
 }
