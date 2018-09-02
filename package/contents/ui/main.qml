@@ -6,33 +6,16 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 Item {
   id: main
 
-  property var model: new Object()
+  property var model
   property bool isDesktopContainment: plasmoid.location == PlasmaCore.Types.Floating
 
   Plasmoid.preferredRepresentation: isDesktopContainment ? Plasmoid.fullRepresentation : Plasmoid.compactRepresentation
-  Plasmoid.compactRepresentation: Compact {
-    // TODO default icon and text
-    // FIXME icon? image? appIcon?
-    icon: model.appIcon
-    body: {
-      if (!(model && model.body)) return null;
-
-      // model.body may be ill-formated HTML-like string
-      // ex: "<?xml version="1.0"?><html>Ping!</html><?xml version="1.0"?><html>Pong!</html>"
-      // split last one part of HTML document
-      var m = model.body.match(/<html>.*<\/html>/g);
-      if (!m) return null;
-      // FIXME remove all HTML tags
-      var text = m[m.length - 1].replace(/<html>(.*)<\/html>/, '$1');
-      return text.replace(/<br\/>/g, '⏎');
-    }
+  Plasmoid.compactRepresentation: Ticker {
+    model: main.model
   }
-  // Plasmoid.fullRepresentation: Ticker {
-    // delegate: FullTickerItem
-  // }
-  Plasmoid.fullRepresentation: Compact {
-    body: 'Full'
-  }
+  // TODO notifications history list
+  Plasmoid.fullRepresentation: Item {}
+  // TODO tooltip
 
   PlasmaCore.DataSource {
     id: notificationsSource
