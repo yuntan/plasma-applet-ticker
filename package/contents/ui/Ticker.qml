@@ -6,8 +6,11 @@ Item {
 
   property var model
 
+  // private:
+  property Item __currentTickerItem
+
   function sanitizeIllFormatedHtml(body) {
-    if (!(model && model.body)) return null;
+    if (!body) return null;
 
     // model.body may be ill-formated HTML-like string
     // ex: "<?xml version="1.0"?><html>Ping!</html><?xml version="1.0"?><html>Pong!</html>"
@@ -20,8 +23,20 @@ Item {
   }
 
   onModelChanged: {
-    // newModel
-    // animation.start();
+    // TODO default icon and text
+    // TODO configureable default text
+    if (!model) return;
+
+    var props = {
+      // FIXME icon? image? appIcon?
+      icon: model.appIcon,
+      body: sanitizeIllFormatedHtml(model.body),
+    };
+    var o = tickerItemComponent.createObject(ticker, props);
+    o.state = 'SHOWN';
+    if (__currentTickerItem)
+      __currentTickerItem.state = 'DISAPPEARED';
+    __currentTickerItem = o;
   }
 
   Layout.fillWidth: true // fill panel margin
@@ -29,19 +44,13 @@ Item {
   Layout.minimumWidth: 5 * units.gridUnit
   Layout.maximumWidth: plasmoid.screenGeometry.width
 
-  TickerItem {
-    widthHint: ticker.width
+  Component {
+    id: tickerItemComponent
 
-    Layout.preferredWidth: widthHint
-    Layout.maximumWidth: widthHint
-    Layout.preferredHeight: ticker.height
-    Layout.maximumHeight: ticker.height
-    anchors.verticalCenter: ticker.verticalCenter // effective
-
-    // TODO default icon and text
-    // TODO configureable default text
-    // FIXME icon? image? appIcon?
-    icon: model ? model.appIcon : null
-    body: (model && model.body) ? sanitizeIllFormatedHtml(model.body) : null
+    TickerItem {
+      width: ticker.width
+      height: ticker.height
+      anchors.left: ticker.left
+    }
   }
 }
