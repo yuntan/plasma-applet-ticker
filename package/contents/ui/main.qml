@@ -6,14 +6,26 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 Item {
   id: main
 
-  // anchors.fill: parent
   property var model: new Object()
-
   property bool isDesktopContainment: plasmoid.location == PlasmaCore.Types.Floating
+
   Plasmoid.preferredRepresentation: isDesktopContainment ? Plasmoid.fullRepresentation : Plasmoid.compactRepresentation
   Plasmoid.compactRepresentation: Compact {
+    // TODO default icon and text
+    // FIXME icon? image? appIcon?
     icon: model.appIcon
-    body: model.body.replace(/\r?\n/g, '⏎')
+    body: {
+      if (!(model && model.body)) return null;
+
+      // model.body may be ill-formated HTML-like string
+      // ex: "<?xml version="1.0"?><html>Ping!</html><?xml version="1.0"?><html>Pong!</html>"
+      // split last one part of HTML document
+      var m = model.body.match(/<html>.*<\/html>/g);
+      if (!m) return null;
+      // FIXME remove all HTML tags
+      var text = m[m.length - 1].replace(/<html>(.*)<\/html>/, '$1');
+      return text.replace(/<br\/>/g, '⏎');
+    }
   }
   // Plasmoid.fullRepresentation: Ticker {
     // delegate: FullTickerItem
@@ -27,7 +39,6 @@ Item {
 
     engine: 'notifications'
     interval: 0 // no polling
-    // connectedSources: ['org.freedesktop.Notifications']
 
     onSourceAdded: {
       console.log('onSourceAdded: source: ' + source);
@@ -35,17 +46,14 @@ Item {
     }
 
     onNewData: {
-      console.log('onNewData: source: ' + data.source + ', appName: ' + data.appName);
-      console.log('id: ' + data.id)
-      console.log('summary: ' + data.summary)
-      console.log('body: ' + data.body)
-      // console.log('onNewData: icon: ' + data.icon + ', image: ' + data.image);
-      console.log(Object.keys(data));
-      // console.log(data.appIcon);
-      // FIXME icon? image? appIcon?
-      // imageItem.image = data.image;
-      // iconItem.source = data.appIcon;
-      // label.text = data.body;
+      console.log('sourceName: ' + sourceName);
+      console.log('sources: ' + notificationsSource.sources)
+      console.log('connectedSources: ' + notificationsSource.connectedSources)
+      // console.log('keysForSource' + notificationsSource.data.keys())
+      console.log('data: ' + notificationsSource.data[sourceName])
+      for (var k in data) {
+        console.log('%1: %2'.arg(k).arg(data[k]))
+      }
 
       model = data;
     }
