@@ -7,7 +7,7 @@ RowLayout {
   id: tickerItem
 
   property alias icon: iconItem.source
-  property alias body: label.text
+  property string body
 
   clip: true
   spacing: units.smallSpacing
@@ -21,6 +21,7 @@ RowLayout {
     Layout.preferredHeight: units.iconSizeHints.panel
     // Layout.preferredWidth: units.iconSizes.small
     // Layout.preferredHeight: units.iconSizes.small
+    // required to center iconItem and label
     Layout.topMargin: (parent.height - Layout.preferredHeight) / 2
     Layout.bottomMargin: Layout.topMargin
 
@@ -29,6 +30,7 @@ RowLayout {
 
     // WHY: onValidChanged doesn't works
     onVisibleChanged: {
+      // TODO remove log output for security
       if (!valid) console.log('IconItem: source (%1) is not valid'.arg(source));
     }
   }
@@ -42,17 +44,60 @@ RowLayout {
   //   visible: !iconItem.visible && status === Image.Ready
   // }
 
-  // TODO horizontal schrolling text
-  PlasmaComponents.Label {
-    id: label
+  // horizontal scrolling ticker
+  Item {
+    id: scrollingLabelContainer
 
-    // should be set for elide
-    Layout.preferredWidth: parent.width - (iconItem.visible ? iconItem.width : 0) - parent.spacing
+    property real scrollLeft: 0
+    property bool scrollEnabled: headLabel.implicitWidth > scrollingLabelContainer.width
 
-    // should be PlainText otherwise neither elide nor maximumLineCount works
-    textFormat: Text.PlainText
-    elide: Text.ElideRight
-    maximumLineCount: 1
+    Layout.preferredWidth: tickerItem.width - (iconItem.visible ? iconItem.width : 0) - tickerItem.spacing
+    Layout.preferredHeight: scrollingLabel.height
+
+    clip: true
+
+    RowLayout {
+      id: scrollingLabel
+
+      // anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.leftMargin: scrollingLabelContainer.scrollLeft
+
+      spacing: units.largeSpacing
+
+      PlasmaComponents.Label {
+        id: headLabel
+
+        text: tickerItem.body
+        // should be PlainText otherwise neither elide nor maximumLineCount works
+        textFormat: Text.PlainText
+        elide: Text.ElideRight
+        maximumLineCount: 1
+      }
+
+      PlasmaComponents.Label {
+        id: tailLabel
+
+        text: tickerItem.body
+        // should be PlainText otherwise neither elide nor maximumLineCount works
+        textFormat: Text.PlainText
+        elide: Text.ElideRight
+        maximumLineCount: 1
+        visible: scrollingLabelContainer.scrollEnabled
+      }
+    }
+
+    SequentialAnimation on scrollLeft {
+      running: scrollingLabelContainer.scrollEnabled
+
+      PauseAnimation { duration: 3000 }
+      NumberAnimation {
+        to: -headLabel.implicitWidth - scrollingLabel.spacing
+        // velocity: 6 gu / sec
+        duration: -to / (0.006 * units.gridUnit)
+      }
+    }
   }
 
   state: 'PRE_SHOWN' // initial state

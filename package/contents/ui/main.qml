@@ -29,6 +29,7 @@ Item {
     }
 
     onNewData: {
+      // TODO remove log output for security
       console.log('sourceName: ' + sourceName);
       console.log('sources: ' + notificationsSource.sources)
       console.log('connectedSources: ' + notificationsSource.connectedSources)

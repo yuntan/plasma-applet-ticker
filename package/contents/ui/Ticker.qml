@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 
+// vertical scrolling ticker
 Item {
   id: ticker
 
