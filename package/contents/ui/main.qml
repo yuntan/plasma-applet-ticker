@@ -32,14 +32,14 @@ Item {
 
     onNewData: {
       // TODO remove log output for security
-      console.log('sourceName: ' + sourceName);
-      console.log('sources: ' + notificationsSource.sources)
-      console.log('connectedSources: ' + notificationsSource.connectedSources)
+      // console.log('sourceName: ' + sourceName);
+      // console.log('sources: ' + notificationsSource.sources)
+      // console.log('connectedSources: ' + notificationsSource.connectedSources)
       // console.log('keysForSource' + notificationsSource.data.keys())
-      console.log('data: ' + notificationsSource.data[sourceName])
-      for (var k in data) {
-        console.log('%1: %2'.arg(k).arg(data[k]))
-      }
+      // console.log('data: ' + notificationsSource.data[sourceName])
+      // for (var k in data) {
+      //   console.log('%1: %2'.arg(k).arg(data[k]))
+      // }
 
       var _data = Object.create(data); // shallow copy
       _data.originalBody = data.body;

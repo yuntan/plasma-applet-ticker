@@ -31,7 +31,7 @@ RowLayout {
     // WHY: onValidChanged doesn't works
     onVisibleChanged: {
       // TODO remove log output for security
-      if (!valid) console.log('IconItem: source (%1) is not valid'.arg(source));
+      // if (!valid) console.log('IconItem: source (%1) is not valid'.arg(source));
     }
   }
 
